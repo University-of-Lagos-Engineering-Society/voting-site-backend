@@ -1,0 +1,31 @@
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser')
+const mongoose = require('mongoose');
+
+mongoose.connect("mongodb+srv://dea-api:PassnET@cluster0.wq63ulc.mongodb.net/"
+, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
+
+
+// Middleware and other configurations
+// parse application/json
+app.use(bodyParser.json())
+// Use the routes
+app.use('/categories', require('./routes/categoryRoutes'));
+app.use('/nominees', require('./routes/nomineeRoutes'));
+app.use('/votes', require('./routes/voteRoutes'));
+// Use other routes
+
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
