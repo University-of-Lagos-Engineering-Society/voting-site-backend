@@ -8,4 +8,11 @@ router.post('/', categoryController.createCategory);
 // Get all categories
 router.get('/', categoryController.getCategories);
 
+// Get nominees in a category
+router.get('/:id/nominees', categoryController.getNomineesByCategory);
+
+
+// Edit category
+router.put('/', categoryController.editCategory);
+
 module.exports = router;

@@ -1,4 +1,5 @@
 const Nominee = require('../models/Nominee');
+const Category = require('../models/Category');
 
 // Get all nominees
 const getAllNominees = async (req, res) => {
@@ -8,6 +9,26 @@ const getAllNominees = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
+};
+
+const getNomineesByCategory = async (req, res) =>{
+  try {
+    const categoryId = req.params.categoryId;
+
+    // Find the category by ID and populate the nominees field
+    const category = await Category.findById(categoryId).populate('nominees');
+
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+
+    const nominees = category.nominees;
+    res.json(nominees);
+  } catch (error) {
+    console.error('Error retrieving nominees by category:', error);
+    res.status(500).json({ error: 'Failed to retrieve nominees' });
+  }
+
 };
 
 // Get a single nominee by ID
@@ -25,13 +46,24 @@ const getNomineeById = async (req, res) => {
 
 // Add a new nominee
 const addNominee = async (req, res) => {
-  try {
+ /* try {
     const { name, category, image } = req.body;
     const nominee = new Nominee({ name, category, image });
     await nominee.save();
     res.status(201).json(nominee);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
+  }*/
+  try {
+    const nominees = req.body; // Array of nominee objects
+
+    // Create multiple nominees using the array of objects
+    const createdNominees = await Nominee.create(nominees);
+
+    res.status(201).json({ nominees: createdNominees });
+  } catch (error) {
+    console.error('Error creating nominees:', error);
+    res.status(500).json({ error: 'Failed to create nominees' });
   }
 };
 
@@ -68,6 +100,7 @@ const deleteNominee = async (req, res) => {
 
 module.exports = {
   getAllNominees,
+  getNomineesByCategory,
   getNomineeById,
   addNominee,
   updateNominee,
