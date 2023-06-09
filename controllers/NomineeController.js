@@ -92,7 +92,7 @@ const deleteNominee = async (req, res) => {
     if (!deletedNominee) {
       return res.status(404).json({ error: 'Nominee not found' });
     }
-    res.json(deletedNominee);
+    res.json({deletedNominee});
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
