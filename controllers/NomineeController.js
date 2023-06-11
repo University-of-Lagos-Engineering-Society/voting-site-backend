@@ -15,14 +15,13 @@ const getNomineesByCategory = async (req, res) =>{
   try {
     const categoryId = req.params.categoryId;
 
-    // Find the category by ID and populate the nominees field
+    // Find the category by ID
     const category = await Category.findById(categoryId).populate('nominees');
-
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
+    const nominees = await Nominee.find({ category : categoryId }).populate('category');
 
-    const nominees = category.nominees;
     res.json(nominees);
   } catch (error) {
     console.error('Error retrieving nominees by category:', error);
