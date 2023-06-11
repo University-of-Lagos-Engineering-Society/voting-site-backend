@@ -90,23 +90,32 @@ The Voting Application API is a backend API that serves as the core functionalit
 
 ```json
 {
-  "nominee": "609e12a8c987b609c83bdf6a"
+    "nominees" :
+    {
+        "CategoryID" : "NomineeID",
+        "CategoryID" : "NomineeID",
+        "CategoryID" : "NomineeID"
+    }
 }
 ```
 
 - **Response Example**:
 
 ```json
---not done yet
+{
+  "message": "Votes recorded"
+}
 ```
 
-#### Get All Votes
+#### Get Vote for a nominee
 
-- **Endpoint**: `GET /api/votes`
+- **Endpoint**: `GET /api/votes/:nomineeID/count`
 - **Response Example**:
 
 ```json
---not done yet
+{
+    "count": 0 
+}
 ```
 
 ## Error Handling
