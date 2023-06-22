@@ -10,13 +10,5 @@ router.get('/category/:categoryId', nomineeController.getNomineesByCategory);
 // GET /nominees/:id - Get a single nominee by ID
 router.get('/:id', nomineeController.getNomineeById);
 
-// POST /nominees - Add a new nominee
-router.post('/', nomineeController.addNominee);
-
-// PUT /nominees/:id - Update a nominee
-router.put('/:id', nomineeController.updateNominee);
-
-// DELETE /nominees/:id - Delete a nominee
-router.delete('/:id', nomineeController.deleteNominee);
 
 module.exports = router;

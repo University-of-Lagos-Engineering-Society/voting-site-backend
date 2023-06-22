@@ -3,7 +3,7 @@ const router = express.Router();
 const categoryController = require('../controllers/categoryController');
 
 // Create a new category
-router.post('/', categoryController.createCategory);
+//router.post('/', categoryController.createCategory);
 
 // Get all categories
 router.get('/', categoryController.getCategories);
@@ -12,7 +12,6 @@ router.get('/', categoryController.getCategories);
 router.get('/:id/nominees', categoryController.getNomineesByCategory);
 
 
-// Edit category
-router.put('/', categoryController.editCategory);
+
 
 module.exports = router;
