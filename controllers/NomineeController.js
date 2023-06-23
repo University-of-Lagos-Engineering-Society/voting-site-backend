@@ -1,10 +1,13 @@
 const Nominee = require('../models/Nominee');
 const Category = require('../models/Category');
 
+let nominees = null;
 // Get all nominees
 const getAllNominees = async (req, res) => {
   try {
-    const nominees = await Nominee.find().populate('category');
+    if(!nominees) {
+        nominees = await Nominee.find().populate('category');
+    }; 
     res.json(nominees);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
