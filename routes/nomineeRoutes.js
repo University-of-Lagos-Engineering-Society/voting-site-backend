@@ -5,6 +5,8 @@ const nomineeController = require('../controllers/NomineeController');
 // GET /nominees - Get all nominees
 router.get('/', nomineeController.getAllNominees);
 
+router.get('/admin', nomineeController.getAllNomineesAdmin);
+
 router.get('/category/:categoryId', nomineeController.getNomineesByCategory);
 
 // GET /nominees/:id - Get a single nominee by ID
