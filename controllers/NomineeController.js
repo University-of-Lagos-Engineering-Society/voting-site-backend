@@ -6,7 +6,7 @@ let nominees = null;
 const getAllNominees = async (req, res) => {
   try {
     if(!nominees) {
-        nominees = await Nominee.find().populate('category');
+        nominees = await Nominee.find().select('-votes').populate('category');
     }; 
     res.json(nominees);
   } catch (error) {
