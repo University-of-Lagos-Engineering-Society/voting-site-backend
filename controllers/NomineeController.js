@@ -14,6 +14,16 @@ const getAllNominees = async (req, res) => {
   }
 };
 
+const getAllNomineesAdmin = async (req, res) => {
+  try {
+       const nomineesAdmin = await Nominee.find().populate('category');
+    
+    res.json(nomineesAdmin);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const getNomineesByCategory = async (req, res) =>{
   try {
     const categoryId = req.params.categoryId;
@@ -102,6 +112,7 @@ const deleteNominee = async (req, res) => {
 
 module.exports = {
   getAllNominees,
+  getAllNomineesAdmin, 
   getNomineesByCategory,
   getNomineeById,
   addNominee,
