@@ -17,7 +17,6 @@ const voteForNominees = async (req, res) => {
     }
     const validCategoriesCount = await Category.countDocuments({_id : {$in : categories}});
     if(validCategoriesCount !== categories.length) {
-      console.log({ validCategoriesCount, categories: categories.length });
       return res.status(400).json({ error: 'Invalid vote' });
     }
 
