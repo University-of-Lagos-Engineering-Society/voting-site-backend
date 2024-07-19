@@ -1,23 +1,43 @@
 const Nominee = require('../models/Nominee');
-const Category = require('../models/Category');
+const { Category, getCategories } = require("../models/Category");
 
 let nominees = null;
 // Get all nominees
 const getAllNominees = async (req, res) => {
   try {
     if(!nominees) {
-        nominees = await Nominee.find().select('-votes').populate('category');
-    }; 
-    res.json(nominees);
+        const nomineesGrouped = [];
+        const nomineesList = await Nominee.find().select('-votes');
+        const categories = await getCategories();
+        for(const nom of nomineesList) {
+          const category = nomineesGrouped.find(n => n.category_name === categories[nom.category]);
+          const nomineeData = {
+            id: nom.id,
+            name: nom.name,
+            image: nom.image || "no_image"
+          };
+          if(!category) {
+            nomineesGrouped.push({
+              category_id: nom.category,
+              category_name: categories[nom.category],
+              nominees: [nomineeData]
+            })
+          } else {
+            category.nominees.push(nomineeData);
+          }
+        }
+        nominees = nomineesGrouped;
+    };
+    return res.json(nominees);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(400).json({ error: error.message });
   }
 };
 
 const getAllNomineesAdmin = async (req, res) => {
   try {
        const nomineesAdmin = await Nominee.find().populate('category');
-    
+
     res.json(nomineesAdmin);
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
@@ -58,24 +78,23 @@ const getNomineeById = async (req, res) => {
 
 // Add a new nominee
 const addNominee = async (req, res) => {
- /* try {
-    const { name, category, image } = req.body;
-    const nominee = new Nominee({ name, category, image });
-    await nominee.save();
-    res.status(201).json(nominee);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }*/
   try {
-    const nominees = req.body; // Array of nominee objects
+    const nominees = req.body.nominees; // Array of nominee objects
 
     // Create multiple nominees using the array of objects
-    const createdNominees = await Nominee.create(nominees);
+    const failed = [];
+    for(nom of nominees) {
+      try {
+        await Nominee.create(nom);
+      } catch(err) {
+        failed.push(`${nom.name} for category ${nom.category} failed: ${err.message}`);
+      }
+    }
 
-    res.status(201).json({ nominees: createdNominees });
+    res.status(200).json({ message: "Nominees added", failed });
   } catch (error) {
     console.error('Error creating nominees:', error);
-    res.status(500).json({ error: 'Failed to create nominees' });
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -112,7 +131,7 @@ const deleteNominee = async (req, res) => {
 
 module.exports = {
   getAllNominees,
-  getAllNomineesAdmin, 
+  getAllNomineesAdmin,
   getNomineesByCategory,
   getNomineeById,
   addNominee,

@@ -1,49 +1,32 @@
-const Vote = require('../models/Vote');
 const Nominee = require('../models/Nominee');
-const Category = require('../models/Category')
+const { Category, getCategories} = require('../models/Category')
 
 // Vote for a nominee
 const voteForNominees = async (req, res) => {
   try {
-    const { nominees } = req.body;
+    const { votes } = req.body;
+    if(!votes) return res.status(400).send({ error : "Invalid votes."});
 
     // Check if the required number of nominees is provided
-    const categories = Object.keys(nominees);
+    const categories = Object.keys(votes);
+    const nominees = Object.values(votes);
+
+    //validate categories
     if (categories.length === 0) {
       return res.status(400).json({ error: 'No nominees provided' });
     }
-
-    // Check if the provided nominees are valid and belong to different categories
-    const validNominees = {};
-    for (const category of categories) {
-      const nomineeId = nominees[category];
-
-      // Check if the nominee exists
-      const nominee = await Nominee.findOne({ _id: nomineeId, category: category });
-      if (!nominee) {
-        return res.status(404).json({ error: `Nominee not found for category: ${category}` });
-      }
-
-      // Store the valid nominee for each category
-      validNominees[category] = nominee;
+    const validCategoriesCount = await Category.countDocuments({_id : {$in : categories}});
+    if(validCategoriesCount !== categories.length) {
+      console.log({ validCategoriesCount, categories: categories.length });
+      return res.status(400).json({ error: 'Invalid vote' });
     }
 
-    // Create votes for the valid nominees
-    const votes = [];
-    for (const category in validNominees) {
-      const nominee = validNominees[category];
-      const vote = new Vote({ nominee: nominee._id });
-      await vote.save();
-      votes.push(vote);
-    }
+    //update nominees votes
+    await Nominee.updateMany({ _id: { $in: nominees } }, { $inc: { votes: 1 } });
 
-    // Increment the vote count for each nominee
-    const nomineeIds = votes.map((vote) => vote.nominee);
-    await Nominee.updateMany({ _id: { $in: nomineeIds } }, { $inc: { votes: 1 } });
-
-    res.status(201).json({ message: 'Votes recorded', votes });
+    return res.json({ message: 'Votes recorded' });
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message });
   }
   };
 
@@ -52,49 +35,71 @@ const voteForNominees = async (req, res) => {
 const getVoteCountForNominee = async (req, res) => {
   try {
     const { nomineeId } = req.params;
-    
+
     // Check if the nominee exists
     const nominee = await Nominee.findById(nomineeId);
     if (!nominee) {
       return res.status(404).json({ error: 'Nominee not found' });
     }
-    
+
     res.json({ count: nominee.votes });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-/*
+
 const getVotesByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
 
-    // Find the category by ID and populate the nominees field
-    const category = await Category.findById(categoryId).populate('nominees');
+    const category = await Category.findById(categoryId);
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-    // Get the nominees and their vote counts
-    const nominees = category.nominees.map((nominee) => ({
-      nomineeId: nominee._id,
-      voteCount: nominee.votes,
-    }));
+    // Find the category by ID and populate the nominees field
+    const nominees = await Nominee.find({ category: categoryId } ).select('id name votes').sort('-votes');
 
-    res.json({ categoryId, nominees });
+    return res.json({ votes: nominees });
   } catch (error) {
     res.status(500).json({ error: 'Internal server Error' });
   }
 };
 
-returning an empty array of nominees while they have already been created.
-*/ 
+
+const getAllVotes = async (req, res) => {
+  try {
+    const nomineesGrouped = [];
+    const nomineesList = await Nominee.find().select('id name votes category').sort('-votes');
+    const categories = await getCategories();
+    for(const nom of nomineesList) {
+      const category = nomineesGrouped.find(n => n.category_name === categories[nom.category]);
+      const nomineeData = {
+        name: nom.name,
+        votes: nom.votes
+      };
+      if(!category) {
+        nomineesGrouped.push({
+          category_id: nom.category,
+          category_name: categories[nom.category],
+          nominees: [nomineeData]
+        })
+      } else {
+        category.nominees.push(nomineeData);
+      }
+    }
+    return res.json(nomineesGrouped);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 
 module.exports = {
   voteForNominees,
   getVoteCountForNominee,
-  //getVotesByCategory
+  getVotesByCategory,
+  getAllVotes
 };

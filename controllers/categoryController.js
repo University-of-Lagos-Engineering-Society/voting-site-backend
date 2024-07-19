@@ -1,4 +1,4 @@
-const Category = require('../models/Category');
+const { Category } = require('../models/Category');
 
 // Create a new category
 exports.createCategory = async (req, res) => {
@@ -42,21 +42,21 @@ exports.getCategories = async (req, res) => {
   }
 };
 
-exports.getNomineesByCategory = async (req, res) => {
-  try {
-    //const categoryId = req.params.categoryId;
-
-    // Find the category by ID and populate the nominees field
-    const category = await Category.findById(req.params.id).populate('nominees');
-    console.log(category)
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
-    }
-
-    const nominees = category.nominees;
-    res.json(nominees);
-  } catch (error) {
-    console.error('Error retrieving nominees by category:', error);
-    res.status(500).json({ error: 'Failed to retrieve nominees' });
-  }
-};
+// exports.getNomineesByCategory = async (req, res) => {
+//   try {
+//     //const categoryId = req.params.categoryId;
+//
+//     // Find the category by ID and populate the nominees field
+//     const category = await Category.findById(req.params.id).populate('nominees');
+//     console.log(category)
+//     if (!category) {
+//       return res.status(404).json({ error: 'Category not found' });
+//     }
+//
+//     const nominees = category.nominees;
+//     res.json(nominees);
+//   } catch (error) {
+//     console.error('Error retrieving nominees by category:', error);
+//     res.status(500).json({ error: 'Failed to retrieve nominees' });
+//   }
+// };

@@ -1,11 +1,23 @@
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
-  name: { type: String, required: true },
- // nominees: [{ type: Schema.Types.ObjectId, ref: 'Nominee' }], returning an empty array of nominees.
-});
+  _id: { type: Number },
+  name: { type: String, required: true, unique: true },
+}, { _id: false });
+
+categorySchema.plugin(AutoIncrement);
 
 const Category = mongoose.model('Category', categorySchema);
 
-module.exports = Category;
+const getCategories = async function() {
+  const categories = await Category.find();
+  const result = {};
+  for(cat of categories) {
+    result[cat._id] = cat.name
+  }
+  return result;
+};
+
+module.exports = { Category, getCategories };
