@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
@@ -26,8 +25,9 @@ db.once('open', () => {
 
 // Middleware and other configurations
 // parse application/json
+app.set('trust proxy', 1);
 app.use(cors());
-app.use(bodyParser.json())
+app.use(express.json())
 
 // Use the routes
 app.use('/categories', require('./routes/categoryRoutes'));
