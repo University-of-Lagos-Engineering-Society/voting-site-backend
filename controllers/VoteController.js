@@ -27,7 +27,7 @@ const voteForNominees = async (req, res) => {
     }
 
     //update nominees votes
-    await Nominee.updateMany({ _id: { $in: nominees } }, { $inc: { votes: 1 } });
+    await Nominee.updateMany({ _id: { $in: nominees }, category : { $in: categories } }, { $inc: { votes: 1 } });
 
     return res.json({ message: 'Votes recorded' });
   } catch (error) {
