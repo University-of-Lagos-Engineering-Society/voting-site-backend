@@ -3,8 +3,8 @@ const { Category } = require('../models/Category');
 // Create a new category
 exports.createCategory = async (req, res) => {
   try {
-    const { name } = req.body;
-    const category = new Category({ name });
+    const { name, type } = req.body;
+    const category = new Category({ name, type });
     await category.save();
     res.status(201).json(category);
   } catch (error) {
