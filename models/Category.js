@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const categorySchema = new Schema({
   _id: { type: Number },
   name: { type: String, required: true, unique: true },
+  type: { type: String, required: true, unique: true },
 }, { _id: false });
 
 categorySchema.plugin(AutoIncrement);
@@ -15,7 +16,7 @@ const getCategories = async function() {
   const categories = await Category.find();
   const result = {};
   for(cat of categories) {
-    result[cat._id] = cat.name
+    result[cat._id] = [cat.name, cat.type, cat.id];
   }
   return result;
 };

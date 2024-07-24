@@ -2,6 +2,11 @@ const Nominee = require('../models/Nominee');
 const { Category, getCategories } = require("../models/Category");
 
 let nominees = null;
+let nomineesType = {};
+
+const validCategoryTypes = ['general', 'graduate', 'undergraduate'];
+
+
 // Get all nominees
 const getAllNominees = async (req, res) => {
   try {
@@ -10,7 +15,7 @@ const getAllNominees = async (req, res) => {
         const nomineesList = await Nominee.find().select('-votes');
         const categories = await getCategories();
         for(const nom of nomineesList) {
-          const category = nomineesGrouped.find(n => n.category_name === categories[nom.category]);
+          const category = nomineesGrouped.find(n => n.category_name === categories[nom.category][0]);
           const nomineeData = {
             id: nom.id,
             name: nom.name,
@@ -19,7 +24,8 @@ const getAllNominees = async (req, res) => {
           if(!category) {
             nomineesGrouped.push({
               category_id: nom.category,
-              category_name: categories[nom.category],
+              category_name: categories[nom.category][0],
+              category_type: categories[nom.category][1],
               nominees: [nomineeData]
             })
           } else {
@@ -29,6 +35,45 @@ const getAllNominees = async (req, res) => {
         nominees = nomineesGrouped;
     };
     return res.json(nominees);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const getAllNomineesByCategoryType = async (req, res) => {
+  try {
+    const type = req.params.categoryType.toLowerCase();
+    if(!type || !validCategoryTypes.includes(type)) {
+      return res.status(400).json({ error: 'Invalid category type.' });
+    }
+    if(!nomineesType[type]) {
+      const nomineesGrouped = [];
+      const categories = await getCategories();
+      const catTypeIds = [];
+      for(let [_, catType, id] of Object.values(categories)) {
+        if(catType === type) catTypeIds.push(id);
+      }
+      const nomineesList = await Nominee.find({ category : { $in : catTypeIds }}).select('-votes');
+      for(const nom of nomineesList) {
+        const category = nomineesGrouped.find(n => n.category_name === categories[nom.category][0]);
+        const nomineeData = {
+          id: nom.id,
+          name: nom.name,
+          image: nom.image || "no_image"
+        };
+        if(!category) {
+          nomineesGrouped.push({
+            category_id: nom.category,
+            category_name: categories[nom.category][0],
+            nominees: [nomineeData]
+          })
+        } else {
+          category.nominees.push(nomineeData);
+        }
+      }
+      nomineesType[type] = nomineesGrouped;
+    };
+    return res.json(nomineesType[type]);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -131,6 +176,7 @@ const deleteNominee = async (req, res) => {
 
 module.exports = {
   getAllNominees,
+  getAllNomineesByCategoryType,
   getAllNomineesAdmin,
   getNomineesByCategory,
   getNomineeById,

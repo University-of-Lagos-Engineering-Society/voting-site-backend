@@ -35,7 +35,15 @@ exports.editCategory = async (req, res) => {
 exports.getCategories = async (req, res) => {
   try {
     const categories = await Category.find();
-    res.status(200).json(categories);
+    const groupedCategories = {};
+    for(let category of categories) {
+      let type = category.type;
+      if(!groupedCategories[type]) {
+        groupedCategories[type] = [];
+      }
+      groupedCategories[type].push({ id: category._id, name: category.name });
+    }
+    res.status(200).json(groupedCategories);
   } catch (error) {
     console.error('Error retrieving categories:', error);
     res.status(500).json({ error: 'An error occurred while retrieving the categories' });

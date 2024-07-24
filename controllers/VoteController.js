@@ -1,11 +1,17 @@
 const Nominee = require('../models/Nominee');
 const { Category, getCategories} = require('../models/Category')
 
+
+const validCategoryTypes = ['general', 'graduate', 'undergraduate'];
+
 // Vote for a nominee
 const voteForNominees = async (req, res) => {
   try {
     const { votes } = req.body;
-    if(!votes) return res.status(400).send({ error : "Invalid votes."});
+    const categoryType = req.params.categoryType.toLowerCase();
+    if(!categoryType.trim() || !validCategoryTypes.includes(categoryType)) return res.status(400).json({ error: "Invalid voting category type" });
+
+    if(!votes) return res.status(400).send({ error : "No votes provided."});
 
     // Check if the required number of nominees is provided
     const categories = Object.keys(votes);
@@ -15,9 +21,9 @@ const voteForNominees = async (req, res) => {
     if (categories.length === 0) {
       return res.status(400).json({ error: 'No nominees provided' });
     }
-    const validCategoriesCount = await Category.countDocuments({_id : {$in : categories}});
+    const validCategoriesCount = await Category.countDocuments({_id : {$in : categories}, type: categoryType});
     if(validCategoriesCount !== categories.length) {
-      return res.status(400).json({ error: 'Invalid vote' });
+      return res.status(400).json({ error: 'Invalid voting categories' });
     }
 
     //update nominees votes
@@ -73,7 +79,7 @@ const getAllVotes = async (req, res) => {
     const nomineesList = await Nominee.find().select('id name votes category').sort('-votes');
     const categories = await getCategories();
     for(const nom of nomineesList) {
-      const category = nomineesGrouped.find(n => n.category_name === categories[nom.category]);
+      const category = nomineesGrouped.find(n => n.category_name === categories[nom.category][0]);
       const nomineeData = {
         name: nom.name,
         votes: nom.votes
@@ -81,7 +87,8 @@ const getAllVotes = async (req, res) => {
       if(!category) {
         nomineesGrouped.push({
           category_id: nom.category,
-          category_name: categories[nom.category],
+          category_name: categories[nom.category][0],
+          category_type: categories[nom.category][1],
           nominees: [nomineeData]
         })
       } else {

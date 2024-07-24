@@ -6,6 +6,9 @@ const isAdmin = require("../middlewares/admin");
 // GET /nominees - Get all nominees
 router.get('/', nomineeController.getAllNominees);
 
+//GET /nominees/type/:categoryType
+router.get('/type/:categoryType', nomineeController.getAllNomineesByCategoryType);
+
 // router.get('/admin', nomineeController.getAllNomineesAdmin);
 
 router.get('/category/:categoryId', nomineeController.getNomineesByCategory);

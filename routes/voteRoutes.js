@@ -14,11 +14,16 @@ const limiter = rateLimit({
     skipFailedRequests: true,
     limit: 1,
     windowMs: Number(process.env.VOTE_LIMIT_WINDOW_HOUR) * 60 * 60 * 1000,
-    message: { error: `You can only vote once every ${process.env.VOTE_LIMIT_WINDOW_HOUR} hr` }
+    message : (req, res) => {
+        return { error: `You can only vote once every ${process.env.VOTE_LIMIT_WINDOW_HOUR} hr the for ${req.params.categoryType} category. Try again later` }
+    },
+    keyGenerator: (req, res) => {
+        return `${req.ip}-${req.params.categoryType.toLowerCase()}`;
+    }
 });
 
 // Vote for a nominees
-router.post('/', limiter, voteController.voteForNominees);
+router.post('/:categoryType', limiter, voteController.voteForNominees);
 
 // Get the vote count for a nominee
 router.get('/:nomineeId/count', isAdmin, voteController.getVoteCountForNominee);
