@@ -15,7 +15,7 @@ const limiter = rateLimit({
     limit: 1,
     windowMs: Number(process.env.VOTE_LIMIT_WINDOW_HOUR) * 60 * 60 * 1000,
     message : (req, res) => {
-        return { error: `You can only vote once every ${process.env.VOTE_LIMIT_WINDOW_HOUR} hr the for ${req.params.categoryType} category. Try again later` }
+        return { error: `You can only vote once every ${process.env.VOTE_LIMIT_WINDOW_HOUR} hr for the ${req.params.categoryType} category. Try again later` }
     },
     keyGenerator: (req, res) => {
         return `${req.ip}-${req.params.categoryType.toLowerCase()}`;
