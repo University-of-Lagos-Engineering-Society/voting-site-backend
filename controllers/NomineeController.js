@@ -19,7 +19,7 @@ const getAllNominees = async (req, res) => {
           const nomineeData = {
             id: nom.id,
             name: nom.name,
-            image: nom.image || process.env.DEFAULT_IMAGE_URL
+            image: nom.image || ""
           };
           if(!category) {
             nomineesGrouped.push({
@@ -59,7 +59,7 @@ const getAllNomineesByCategoryType = async (req, res) => {
         const nomineeData = {
           id: nom.id,
           name: nom.name,
-          image: nom.image || process.env.DEFAULT_IMAGE_URL
+          image: nom.image || ""
         };
         if(!category) {
           nomineesGrouped.push({
