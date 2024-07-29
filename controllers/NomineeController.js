@@ -130,7 +130,18 @@ const addNominee = async (req, res) => {
     const failed = [];
     for(nom of nominees) {
       try {
-        await Nominee.create(nom);
+        if(typeof nom.category === "string") {
+          const ids = nom.category.split(",");
+          for(const id of ids) {
+            await createNominee({
+              name: nom.name,
+              category: id.trim(),
+              image: nom.image
+            });
+          }
+        } else {
+          await createNominee(nom);
+        }
       } catch(err) {
         failed.push(`${nom.name} for category ${nom.category} failed: ${err.message}`);
       }
@@ -142,6 +153,14 @@ const addNominee = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+const createNominee = async (nomData) => {
+  if(nomData.image && nomData.image.indexOf('?id=') !== -1) {
+    const imageId = nomData.image.split('?id=')[1];
+    nomData.image = `https://lh3.googleusercontent.com/d/${imageId}=w1280-h720`;
+  }
+  return await Nominee.create(nomData)
+}
 
 // Update a nominee
 const updateNominee = async (req, res) => {

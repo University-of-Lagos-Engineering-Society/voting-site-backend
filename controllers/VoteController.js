@@ -7,6 +7,10 @@ const validCategoryTypes = ['general', 'graduate', 'undergraduate'];
 // Vote for a nominee
 const voteForNominees = async (req, res) => {
   try {
+
+    if(process.env.VOTING_CLOSED == "true") {
+      return res.status(400).json({ error: "Voting closed." });
+    }
     const { votes } = req.body;
     const categoryType = req.params.categoryType.toLowerCase();
     if(!categoryType.trim() || !validCategoryTypes.includes(categoryType)) return res.status(400).json({ error: "Invalid voting category type" });
