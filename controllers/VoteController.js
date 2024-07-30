@@ -1,5 +1,6 @@
 const Nominee = require('../models/Nominee');
 const { Category, getCategories} = require('../models/Category')
+const Vote = require("../models/Vote");
 
 
 const validCategoryTypes = ['general', 'graduate', 'undergraduate'];
@@ -32,6 +33,17 @@ const voteForNominees = async (req, res) => {
 
     //update nominees votes
     await Nominee.updateMany({ _id: { $in: nominees }, category : { $in: categories } }, { $inc: { votes: 1 } });
+
+    //for stat purposes
+    try {
+      await Vote.create({
+        ip: req.ip,
+        category_type: categoryType
+      })
+    } catch(err) {
+      console.log(err);
+    }
+
 
     return res.json({ message: 'Votes recorded' });
   } catch (error) {
