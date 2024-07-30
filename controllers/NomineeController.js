@@ -71,6 +71,7 @@ const getAllNomineesByCategoryType = async (req, res) => {
           category.nominees.push(nomineeData);
         }
       }
+      nomineesGrouped.sort((a, b) => a.category_id - b.category_id);
       nomineesType[type] = nomineesGrouped;
     };
     return res.json(nomineesType[type]);
