@@ -155,11 +155,20 @@ const addNominee = async (req, res) => {
 };
 
 const createNominee = async (nomData) => {
-  if(nomData.image && nomData.image.indexOf('?id=') !== -1) {
-    const imageId = nomData.image.split('?id=')[1];
-    nomData.image = `https://lh3.googleusercontent.com/d/${imageId}=w1280-h720`;
-  }
+  nomData.image = formatGoogleImageLink(nomData.image)
   return await Nominee.create(nomData)
+}
+
+const formatGoogleImageLink = (url) => {
+  let id;
+  if (url.includes("open?id=")) {
+    id = url.split("open?id=")[1];
+  } else if (url.includes("/file/d/")) {
+    id = url.split("/file/d/")[1].split("/")[0];
+  } else {
+    return url;
+  }
+  return `https://lh3.googleusercontent.com/d/${id}=w1280-h720`;
 }
 
 // Update a nominee
