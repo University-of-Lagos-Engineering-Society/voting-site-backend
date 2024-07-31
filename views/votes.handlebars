@@ -45,17 +45,19 @@
 <table>
     <thead>
     <tr>
-        <th>S/N</th>
+        <th>Rank</th>
         <th>Name</th>
         <th>Votes</th>
+        <th>Percent</th>
     </tr>
     </thead>
     <tbody>
     {{#each votes}}
         <tr>
-            <td>{{serialNumber @index}}</td>
+            <td>{{this.rank}}</td>
             <td>{{this.name}}</td>
             <td>{{this.votes}}</td>
+            <td>{{this.percent}}</td>
         </tr>
     {{/each}}
     </tbody>
