@@ -3,6 +3,14 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const { engine } = require('express-handlebars');
+
+// Set up Handlebars
+app.engine('handlebars', engine({ defaultLayout: false, helpers: {
+    serialNumber: (index) => index + 1
+  }}));
+app.set('view engine', 'handlebars');
+app.set('views', './views');
 
 dotenv.config()
 require('dotenv').config({ path: '.env' });

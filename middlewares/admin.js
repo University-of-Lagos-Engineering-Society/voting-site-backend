@@ -6,4 +6,14 @@ const isAdmin = (req, res, next) => {
     return next();
 }
 
-module.exports = isAdmin;
+const resultProtect = (req, res, next) => {
+    if (req.method === 'POST' && req.body.secret === process.env.ADMIN_SECRET) {
+        return next();
+    } else if (req.method === 'GET') {
+        return res.render('password', { url: req.originalUrl });
+    } else {
+        return res.render('password', { error: 'Incorrect secret' });
+    }
+}
+
+module.exports = { isAdmin, resultProtect };

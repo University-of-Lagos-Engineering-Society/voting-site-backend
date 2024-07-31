@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const nomineeController = require('../controllers/NomineeController');
-const isAdmin = require("../middlewares/admin");
+const {isAdmin} = require("../middlewares/admin");
 
 // GET /nominees - Get all nominees
 router.get('/', nomineeController.getAllNominees);

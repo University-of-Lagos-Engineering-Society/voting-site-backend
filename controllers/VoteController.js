@@ -74,15 +74,15 @@ const getVotesByCategory = async (req, res) => {
   try {
     const { categoryId } = req.params;
 
-    const category = await Category.findById(categoryId);
+    const category = await Category.findById(categoryId).lean();
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
 
     // Find the category by ID and populate the nominees field
-    const nominees = await Nominee.find({ category: categoryId } ).select('id name votes').sort('-votes');
+    const nominees = await Nominee.find({ category: categoryId } ).select('id name votes').sort('-votes').lean();
 
-    return res.json({ votes: nominees });
+    return res.render('votes', { votes: nominees, category: category })
   } catch (error) {
     res.status(500).json({ error: 'Internal server Error' });
   }
