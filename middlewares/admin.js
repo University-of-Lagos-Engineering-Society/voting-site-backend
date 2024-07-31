@@ -7,6 +7,9 @@ const isAdmin = (req, res, next) => {
 }
 
 const resultProtect = (req, res, next) => {
+    const secret = req.query.adminSecret;
+    if(secret && secret === process.env.ADMIN_SECRET) return next();
+
     if (req.method === 'POST' && req.body.secret === process.env.ADMIN_SECRET) {
         return next();
     } else if (req.method === 'GET') {
