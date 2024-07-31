@@ -99,6 +99,8 @@ const getVotesByCategory = async (req, res) => {
       nominees[i].percent = `${percent}%`;
     }
 
+    nominees.push({ votes: `${totalVotes} votes` })
+
     return res.render('votes', { votes: nominees, category: category })
   } catch (error) {
     res.status(500).json({ error: 'Internal server Error' });
