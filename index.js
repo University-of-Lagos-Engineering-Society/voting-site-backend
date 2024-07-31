@@ -34,6 +34,7 @@ db.once('open', () => {
 app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // Use the routes
 app.use('/categories', require('./routes/categoryRoutes'));
