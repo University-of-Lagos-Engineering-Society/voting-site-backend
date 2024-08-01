@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{category.name}} ({{category.type}}) Results | A Night in Avaloria</title>
+    <title>Vote Results | A Night in Avaloria</title>
     <link rel="icon" href="https://www.anightinavaloria.com/ules.svg">
     <style>
         body {
@@ -20,7 +20,7 @@
         }
         table {
             max-width: 800px;
-            margin: 20px auto;
+            margin: 20px auto 40px;
             border-collapse: collapse;
             background: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -41,27 +41,29 @@
 </head>
 <body>
 <img width="100" src="https://www.anightinavaloria.com/vote-logo.png" alt="Avaloria">
-<h1>{{category.type}}</h1>
-<h2>{{category.name}}</h2>
+
+{{#each results}}
+
+<h1>{{this.category_type}}</h1>
+<h2>{{this.category_name}}</h2>
 <table>
     <thead>
     <tr>
-        <th>Rank</th>
         <th>Name</th>
         <th>Votes</th>
-        <th>Percent</th>
     </tr>
     </thead>
     <tbody>
-    {{#each votes}}
+    {{#each this.nominees}}
         <tr>
-            <td>{{this.rank}}</td>
             <td>{{this.name}}</td>
             <td>{{this.votes}}</td>
-            <td>{{this.percent}}</td>
         </tr>
     {{/each}}
     </tbody>
 </table>
+
+{{/each}}
+
 </body>
 </html>

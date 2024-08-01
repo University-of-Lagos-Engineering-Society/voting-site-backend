@@ -114,7 +114,7 @@ const getAllVotes = async (req, res) => {
     const nomineesList = await Nominee.find().select('id name votes category').sort('-votes');
     const categories = await getCategories();
     for(const nom of nomineesList) {
-      const category = nomineesGrouped.find(n => n.category_name === categories[nom.category][0]);
+      const category = nomineesGrouped.find(n => n.category_id === categories[nom.category][2]);
       const nomineeData = {
         name: nom.name,
         votes: nom.votes
@@ -130,7 +130,8 @@ const getAllVotes = async (req, res) => {
         category.nominees.push(nomineeData);
       }
     }
-    return res.json(nomineesGrouped);
+    nomineesGrouped.sort((a,b) => a.category_id - b.category_id);
+    return res.render('allvotes', { results: nomineesGrouped });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
