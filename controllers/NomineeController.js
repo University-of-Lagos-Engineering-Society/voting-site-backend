@@ -80,6 +80,12 @@ const getAllNomineesByCategoryType = async (req, res) => {
   }
 };
 
+const resetNomineesCache = (req, res, next) => {
+  nominees = null;
+  nomineesType = {};
+  return res.json({ message : "Cache cleared." });
+}
+
 const getAllNomineesAdmin = async (req, res) => {
   try {
        const nomineesAdmin = await Nominee.find().populate('category');
@@ -212,4 +218,5 @@ module.exports = {
   addNominee,
   updateNominee,
   deleteNominee,
+  resetNomineesCache
 };

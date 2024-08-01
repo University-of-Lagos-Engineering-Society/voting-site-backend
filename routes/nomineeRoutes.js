@@ -6,6 +6,8 @@ const {isAdmin} = require("../middlewares/admin");
 // GET /nominees - Get all nominees
 router.get('/', nomineeController.getAllNominees);
 
+router.delete('/cache', isAdmin, nomineeController.resetNomineesCache);
+
 //GET /nominees/type/:categoryType
 router.get('/type/:categoryType', nomineeController.getAllNomineesByCategoryType);
 
