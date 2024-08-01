@@ -6,9 +6,7 @@ const dotenv = require('dotenv');
 const { engine } = require('express-handlebars');
 
 // Set up Handlebars
-app.engine('handlebars', engine({ defaultLayout: false, helpers: {
-    serialNumber: (index) => index + 1
-  }}));
+app.engine('handlebars', engine({ defaultLayout: false }));
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
