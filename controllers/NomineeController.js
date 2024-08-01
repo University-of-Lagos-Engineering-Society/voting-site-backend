@@ -53,7 +53,7 @@ const getAllNomineesByCategoryType = async (req, res) => {
       for(let [_, catType, id] of Object.values(categories)) {
         if(catType === type) catTypeIds.push(id);
       }
-      const nomineesList = await Nominee.find({ category : { $in : catTypeIds }}).select('-votes');
+      const nomineesList = await Nominee.find({ category : { $in : catTypeIds }}).sort('order');
       for(const nom of nomineesList) {
         const category = nomineesGrouped.find(n => n.category_name === categories[nom.category][0]);
         const nomineeData = {

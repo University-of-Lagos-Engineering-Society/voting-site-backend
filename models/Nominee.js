@@ -9,6 +9,7 @@ const nomineeSchema = new Schema({
   category: { type: Number, ref: 'Category', required: true },
   image: { type: String },
   votes: { type: Number, default: 0 },
+  order: { type: Number, default: 100, required: true }
 }, { _id: false });
 
 nomineeSchema.index({ name: 1, category: 1 }, { unique: true });
