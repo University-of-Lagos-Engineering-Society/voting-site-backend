@@ -131,12 +131,35 @@ const getAllVotes = async (req, res) => {
       }
     }
     nomineesGrouped.sort((a,b) => a.category_id - b.category_id);
+    for(const noms of nomineesGrouped) {
+      addRanksAndPercentages(noms.nominees)
+    }
     return res.render('allvotes', { results: nomineesGrouped });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+const addRanksAndPercentages = (nominees)  => {
+  const totalVotes = nominees.reduce((acc, b) => acc + b.votes, 0);
+
+  //Add ranks and percentages
+  let rank = 1;
+  let previousVotes = nominees[0].votes;
+  nominees[0].rank = rank;
+
+  for (let i = 0; i < nominees.length; i++) {
+    if (nominees[i].votes < previousVotes) {
+      rank = i + 1;
+      previousVotes = nominees[i].votes;
+    }
+    nominees[i].rank = rank;
+    const percent = totalVotes !== 0 ? ((nominees[i].votes / totalVotes) * 100).toFixed(2) : 0;
+    nominees[i].percent = `${percent}%`;
+  }
+
+  nominees.push({ votes: `${totalVotes} votes` })
+}
 
 
 module.exports = {

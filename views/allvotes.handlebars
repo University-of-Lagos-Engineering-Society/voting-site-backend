@@ -49,15 +49,19 @@
 <table>
     <thead>
     <tr>
+        <th>Rank</th>
         <th>Name</th>
         <th>Votes</th>
+        <th>Percent</th>
     </tr>
     </thead>
     <tbody>
     {{#each this.nominees}}
         <tr>
+            <td>{{this.rank}}</td>
             <td>{{this.name}}</td>
             <td>{{this.votes}}</td>
+            <td>{{this.percent}}</td>
         </tr>
     {{/each}}
     </tbody>
