@@ -81,25 +81,7 @@ const getVotesByCategory = async (req, res) => {
 
     // Find the category by ID and populate the nominees field
     const nominees = await Nominee.find({ category: categoryId } ).select('id name votes').sort('-votes').lean();
-
-    const totalVotes = nominees.reduce((acc, b) => acc + b.votes, 0);
-
-    //Add ranks and percentages
-    let rank = 1;
-    let previousVotes = nominees[0].votes;
-    nominees[0].rank = rank;
-
-    for (let i = 0; i < nominees.length; i++) {
-      if (nominees[i].votes < previousVotes) {
-        rank = i + 1;
-        previousVotes = nominees[i].votes;
-      }
-      nominees[i].rank = rank;
-      const percent = totalVotes !== 0 ? ((nominees[i].votes / totalVotes) * 100).toFixed(2) : 0;
-      nominees[i].percent = `${percent}%`;
-    }
-
-    nominees.push({ votes: `${totalVotes} votes` })
+    addRanksAndPercentages(nominees);
 
     return res.render('votes', { votes: nominees, category: category })
   } catch (error) {
